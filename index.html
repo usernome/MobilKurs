@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>EduMobile</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#EBEBEB;--card:#E3E3E3;--card2:#D8D8D8;--border:#C8C8C8;
+  --text:#1C1C1C;--text2:#555;--text3:#888;
+  --accent:#3B3B3B;--white:#F5F5F5;--r:14px;--ff:'Nunito',sans-serif;
+}
+html,body{width:100%;height:100%;background:var(--bg);font-family:var(--ff);color:var(--text);overflow:hidden;}
+#app{width:100%;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden;background:var(--white);}
+.screen{display:none;flex-direction:column;flex:1;overflow:hidden;}
+.screen.active{display:flex;}
+.vscreen{display:none;flex-direction:column;flex:1;overflow:hidden;}
+.vscreen.active{display:flex;}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:68px;}
+.scroll::-webkit-scrollbar{display:none;}
+
+/* BOTTOM NAV */
+#bnav{position:fixed;bottom:0;left:0;right:0;height:60px;background:var(--white);border-top:1px solid var(--border);display:flex;align-items:center;z-index:100;padding-bottom:env(safe-area-inset-bottom);}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;padding:6px 0;}
+.nb .ni{font-size:22px;line-height:1;}
+.nb .nl{font-size:10px;font-weight:700;color:var(--text3);font-family:var(--ff);}
+.nb.active .nl{color:var(--accent);}
+
+/* PAGE HEADER */
+.phdr{padding:14px 18px 8px;background:var(--white);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.ph-title{font-size:20px;font-weight:800;}
+.ph-sub{font-size:12px;color:var(--text3);}
+.ibtn{width:36px;height:36px;background:var(--card);border:none;border-radius:10px;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+
+/* HOME */
+.greet-block{padding:0 18px 12px;background:var(--white);}
+.streak-box{background:var(--card);border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;gap:12px;margin-top:10px;}
+.si{flex:1;}
+.sn{font-size:18px;font-weight:800;}
+.sl{font-size:11px;color:var(--text3);}
+.sdays{display:flex;gap:5px;margin-top:6px;}
+.sd{width:26px;height:26px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--text3);}
+.sd.done{background:var(--accent);color:#fff;}
+.sd.today{background:#666;color:#fff;border:2px solid var(--accent);}
+.slabel{font-size:16px;font-weight:800;padding:14px 18px 8px;}
+.hscroll{display:flex;gap:12px;padding:0 18px 4px;overflow-x:auto;scrollbar-width:none;}
+.hscroll::-webkit-scrollbar{display:none;}
+.cc{flex-shrink:0;width:180px;background:var(--card);border-radius:var(--r);overflow:hidden;cursor:pointer;}
+.cc-thumb{height:80px;display:flex;align-items:center;justify-content:center;font-size:34px;background:var(--card2);}
+.cc-info{padding:9px 11px 11px;}
+.cc-title{font-size:12px;font-weight:700;line-height:1.4;}
+.cc-meta{font-size:10px;color:var(--text3);margin-top:2px;}
+.pb{height:4px;background:var(--border);border-radius:4px;margin-top:7px;}
+.pbf{height:100%;border-radius:4px;background:var(--accent);}
+.rc{margin:0 18px 12px;background:var(--card);border-radius:var(--r);display:flex;align-items:center;gap:12px;padding:12px;cursor:pointer;}
+.rt{width:52px;height:52px;border-radius:10px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.ri{flex:1;}
+.ri-title{font-size:13px;font-weight:700;}
+.ri-meta{font-size:11px;color:var(--text3);margin-top:2px;}
+.ri-price{font-size:13px;font-weight:800;color:var(--accent);}
+
+/* COURSES */
+.search-block{padding:8px 18px 10px;background:var(--white);}
+.sbox{background:var(--card);border-radius:12px;display:flex;align-items:center;gap:8px;padding:10px 13px;}
+.sbox input{background:none;border:none;outline:none;font-size:14px;font-family:var(--ff);color:var(--text);flex:1;}
+.sbox input::placeholder{color:var(--text3);}
+.cats{display:flex;gap:8px;padding:0 18px 12px;overflow-x:auto;scrollbar-width:none;}
+.cats::-webkit-scrollbar{display:none;}
+.catb{flex-shrink:0;padding:6px 13px;border-radius:20px;border:1.5px solid var(--border);background:none;font-size:12px;font-weight:700;font-family:var(--ff);color:var(--text2);cursor:pointer;}
+.catb.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.kcard{margin:0 18px 13px;background:var(--card);border-radius:var(--r);overflow:hidden;cursor:pointer;}
+.kbanner{height:110px;display:flex;align-items:center;justify-content:center;font-size:46px;background:var(--card2);}
+.kbody{padding:11px 13px 13px;}
+.ktitle{font-size:14px;font-weight:800;line-height:1.4;}
+.kauthor{font-size:11px;color:var(--text3);margin-top:3px;}
+.krow{display:flex;align-items:center;justify-content:space-between;margin-top:9px;}
+.kstats{display:flex;gap:8px;}
+.ks{font-size:11px;color:var(--text3);}
+.kprice{font-size:14px;font-weight:800;color:var(--accent);}
+.badge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700;background:var(--white);color:var(--text2);margin-top:5px;}
+.badge.new{background:var(--accent);color:#fff;}
+
+/* MY */
+.mytabs{display:flex;padding:0 18px 10px;background:var(--white);}
+.mytab{flex:1;padding:7px 4px;border:none;background:none;font-size:12px;font-weight:700;font-family:var(--ff);color:var(--text3);cursor:pointer;border-bottom:2.5px solid transparent;}
+.mytab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.mycard{margin:0 18px 12px;background:var(--card);border-radius:var(--r);padding:13px;cursor:pointer;}
+.mctop{display:flex;gap:11px;align-items:flex-start;}
+.mcthumb{width:52px;height:52px;border-radius:10px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.mcinfo{flex:1;}
+.mctitle{font-size:13px;font-weight:700;}
+.mcauthor{font-size:11px;color:var(--text3);margin-top:2px;}
+.mcprow{display:flex;align-items:center;gap:9px;margin-top:9px;}
+.mcpb{flex:1;height:6px;background:var(--border);border-radius:4px;overflow:hidden;}
+.mcpf{height:100%;background:var(--accent);border-radius:4px;}
+.mcpct{font-size:11px;font-weight:700;color:var(--accent);}
+.mclast{font-size:11px;color:var(--text3);margin-top:5px;}
+
+/* PROGRESS */
+.pgsum{margin:12px 18px;background:var(--card);border-radius:var(--r);padding:14px;}
+.pgstitle{font-size:13px;font-weight:700;margin-bottom:11px;}
+.pggrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.pgstat{background:var(--white);border-radius:10px;padding:11px;text-align:center;}
+.pgnum{font-size:20px;font-weight:800;}
+.pglbl{font-size:10px;color:var(--text3);margin-top:2px;}
+.wchart{margin:0 18px 12px;background:var(--card);border-radius:var(--r);padding:13px;}
+.wctitle{font-size:13px;font-weight:700;margin-bottom:11px;}
+.bars{display:flex;align-items:flex-end;gap:7px;height:66px;}
+.bcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.bfill{width:100%;border-radius:5px 5px 0 0;background:#C0C0C0;}
+.bfill.today{background:var(--accent);}
+.bday{font-size:9px;color:var(--text3);font-weight:700;}
+.achcard{margin:0 18px 10px;background:var(--card);border-radius:var(--r);padding:12px 13px;display:flex;align-items:center;gap:11px;}
+.achi{font-size:26px;}
+.achinfo{flex:1;}
+.achtitle{font-size:13px;font-weight:700;}
+.achdesc{font-size:11px;color:var(--text3);margin-top:2px;}
+.achdate{font-size:10px;color:var(--text3);}
+
+/* PROFILE */
+.ptop{padding:18px;display:flex;flex-direction:column;align-items:center;background:var(--white);}
+.avatar{width:68px;height:68px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;font-weight:800;margin-bottom:9px;}
+.pname{font-size:17px;font-weight:800;}
+.pemail{font-size:12px;color:var(--text3);margin-top:2px;}
+.pstats{display:flex;gap:22px;margin-top:13px;}
+.pst{text-align:center;}
+.pstn{font-size:18px;font-weight:800;}
+.pstl{font-size:10px;color:var(--text3);}
+.mitem{display:flex;align-items:center;gap:13px;padding:13px 18px;cursor:pointer;}
+.micon{width:34px;height:34px;border-radius:9px;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:17px;}
+.mlabel{flex:1;font-size:14px;font-weight:600;}
+.marrow{font-size:14px;color:var(--text3);}
+.mdiv{height:1px;background:var(--border);margin:0 18px;}
+
+/* DETAIL */
+.dhdr{padding:12px 18px;background:var(--white);display:flex;align-items:center;gap:11px;flex-shrink:0;}
+.backbtn{width:34px;height:34px;background:var(--card);border:none;border-radius:10px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.dhdr-title{font-size:13px;font-weight:700;flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.dbanner{height:150px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:60px;flex-shrink:0;}
+.dbody{padding:15px 18px;}
+.dtitle{font-size:18px;font-weight:800;line-height:1.35;}
+.dauthor{font-size:13px;color:var(--text3);margin-top:4px;}
+.dstats{display:flex;gap:13px;margin-top:11px;flex-wrap:wrap;}
+.dst{font-size:12px;color:var(--text2);}
+.ddesc{font-size:13px;line-height:1.6;color:var(--text2);margin-top:13px;}
+.ltitle{font-size:15px;font-weight:800;margin:15px 0 9px;}
+.litem{display:flex;align-items:center;gap:11px;padding:10px 13px;background:var(--card);border-radius:10px;margin-bottom:8px;cursor:pointer;}
+.lnum{width:28px;height:28px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+.lnum.done{background:var(--accent);color:#fff;}
+.linfo{flex:1;}
+.ltxt{font-size:13px;font-weight:700;}
+.ldur{font-size:11px;color:var(--text3);margin-top:2px;}
+.enroll{width:100%;padding:15px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-size:15px;font-weight:800;font-family:var(--ff);cursor:pointer;margin-top:15px;}
+
+/* VIDEO */
+.vhdr{padding:12px 18px;background:#111;display:flex;align-items:center;gap:11px;flex-shrink:0;}
+.varea{background:#111;height:200px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;flex-shrink:0;position:relative;}
+.vplay{width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.3);cursor:pointer;font-size:26px;color:#fff;display:flex;align-items:center;justify-content:center;}
+.vtime-txt{color:#bbb;font-size:12px;font-family:var(--ff);}
+.vcontrols{background:#1a1a1a;padding:10px 18px 12px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.vseek{flex:1;height:5px;background:#444;border-radius:4px;position:relative;cursor:pointer;}
+.vseek-fill{height:100%;background:#e0e0e0;border-radius:4px;transition:width .5s linear;}
+.vspeed{background:#333;border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:700;font-family:var(--ff);padding:5px 10px;cursor:pointer;}
+.vbody-scroll{flex:1;overflow-y:auto;background:var(--white);scrollbar-width:none;}
+.vbody-scroll::-webkit-scrollbar{display:none;}
+.vbody{padding:14px 18px;}
+.vtitle{font-size:16px;font-weight:800;}
+.vauthor{font-size:12px;color:var(--text3);margin-top:3px;}
+.vtabs{display:flex;gap:0;margin-top:12px;border-bottom:1px solid var(--border);}
+.vtab{flex:1;padding:8px 4px;border:none;background:none;font-size:12px;font-weight:700;font-family:var(--ff);color:var(--text3);cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1px;}
+.vtab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.vtabcontent{margin-top:13px;padding-bottom:20px;}
+
+/* Konspekt styles */
+.konspekt-block{background:var(--card);border-radius:12px;padding:14px;margin-bottom:12px;}
+.kb-title{font-size:13px;font-weight:800;margin-bottom:8px;color:var(--accent);}
+.kb-text{font-size:13px;line-height:1.7;color:var(--text2);}
+.code-box{background:#2a2a2a;border-radius:10px;padding:13px;margin:10px 0;overflow-x:auto;}
+.code-box pre{font-size:12px;color:#e0e0e0;font-family:monospace;white-space:pre;line-height:1.6;}
+.tip-box{background:#E8E8E8;border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:10px 13px;margin:8px 0;font-size:12px;color:var(--text2);line-height:1.6;}
+.key-point{display:flex;gap:8px;align-items:flex-start;padding:6px 0;font-size:13px;color:var(--text2);line-height:1.5;}
+
+/* Comments */
+.comment{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);}
+.cmav{width:32px;height:32px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;}
+.cminfo{flex:1;}
+.cmname{font-size:12px;font-weight:700;}
+.cmtext{font-size:12px;color:var(--text2);margin-top:2px;line-height:1.4;}
+
+/* Next lessons list */
+.nl-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.nl-num{width:26px;height:26px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;}
+.nl-num.done{background:var(--accent);color:#fff;}
+.nl-num.cur{background:var(--accent2,#555);color:#fff;}
+.nl-info{flex:1;}
+.nl-t{font-size:12px;font-weight:700;}
+.nl-d{font-size:11px;color:var(--text3);}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ═══ HOME ═══ -->
+  <div class="screen active" id="s-home">
+    <div class="phdr">
+      <div>
+        <div style="font-size:14px;color:var(--text3)">Xush kelibsiz, <strong style="color:var(--text)">Sardor! 👋</strong></div>
+      </div>
+      <button class="ibtn" onclick="showNotif()">🔔</button>
+    </div>
+    <div class="greet-block">
+      <div class="streak-box">
+        <div style="font-size:28px">🔥</div>
+        <div class="si">
+          <div class="sn">12 kun streak</div>
+          <div class="sl">Ketma-ket oʼqish rekordingiz!</div>
+          <div class="sdays">
+            <div class="sd done">Du</div><div class="sd done">Se</div>
+            <div class="sd done">Ch</div><div class="sd done">Pa</div>
+            <div class="sd done">Ju</div><div class="sd today">Sh</div>
+            <div class="sd">Ya</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll">
+      <div class="slabel">Davom ettirish</div>
+      <div class="hscroll">
+        <div class="cc" onclick="openDetail('python')">
+          <div class="cc-thumb">🐍</div>
+          <div class="cc-info">
+            <div class="cc-title">Python asoslari</div>
+            <div class="cc-meta">7/24 dars</div>
+            <div class="pb"><div class="pbf" style="width:29%"></div></div>
+          </div>
+        </div>
+        <div class="cc" onclick="openDetail('web')">
+          <div class="cc-thumb">🌐</div>
+          <div class="cc-info">
+            <div class="cc-title">Veb-dizayn: HTML & CSS</div>
+            <div class="cc-meta">15/30 dars</div>
+            <div class="pb"><div class="pbf" style="width:50%"></div></div>
+          </div>
+        </div>
+        <div class="cc" onclick="openDetail('excel')">
+          <div class="cc-thumb">📊</div>
+          <div class="cc-info">
+            <div class="cc-title">Excel chuqurlashtirilgan</div>
+            <div class="cc-meta">3/18 dars</div>
+            <div class="pb"><div class="pbf" style="width:17%"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="slabel">Siz uchun tavsiyalar</div>
+      <div class="rc" onclick="openDetail('sql')"><div class="rt">🗄️</div><div class="ri"><div class="ri-title">SQL va maʼlumotlar bazasi</div><div class="ri-meta">Beginner · 4.8 ⭐ · 20 dars</div><div class="ri-price">45 000 soʼm</div></div></div>
+      <div class="rc" onclick="openDetail('photo')"><div class="rt">📸</div><div class="ri"><div class="ri-title">Fotografiya asoslari</div><div class="ri-meta">Beginner · 4.6 ⭐ · 15 dars</div><div class="ri-price">35 000 soʼm</div></div></div>
+      <div class="rc" onclick="openDetail('finance')"><div class="rt">📈</div><div class="ri"><div class="ri-title">Moliyaviy savodxonlik</div><div class="ri-meta">Intermediate · 4.9 ⭐ · 22 dars</div><div class="ri-price">60 000 soʼm</div></div></div>
+    </div>
+  </div>
+
+  <!-- ═══ COURSES ═══ -->
+  <div class="screen" id="s-courses">
+    <div class="phdr"><div><div class="ph-title">Kurslar</div><div class="ph-sub">500+ ta kurs mavjud</div></div></div>
+    <div class="search-block">
+      <div class="sbox">
+        <span style="font-size:16px">🔍</span>
+        <input type="search" id="search-input" placeholder="Kurs yoki mavzu izlang..." oninput="filterCourses()">
+      </div>
+    </div>
+    <div class="cats" id="cats">
+      <button class="catb active" onclick="setCat(this,'all')">Hammasi</button>
+      <button class="catb" onclick="setCat(this,'dasturlash')">Dasturlash</button>
+      <button class="catb" onclick="setCat(this,'dizayn')">Dizayn</button>
+      <button class="catb" onclick="setCat(this,'biznes')">Biznes</button>
+      <button class="catb" onclick="setCat(this,'til')">Til</button>
+    </div>
+    <div class="scroll" id="courses-list"></div>
+  </div>
+
+  <!-- ═══ MY ═══ -->
+  <div class="screen" id="s-my">
+    <div class="phdr"><div><div class="ph-title">Mening kurslarim</div></div></div>
+    <div class="mytabs">
+      <button class="mytab active" onclick="setMyTab(this,'active')">Davom etayotgan</button>
+      <button class="mytab" onclick="setMyTab(this,'done')">Tugatilgan</button>
+      <button class="mytab" onclick="setMyTab(this,'saved')">Saqlangan</button>
+    </div>
+    <div class="scroll" id="my-list"></div>
+  </div>
+
+  <!-- ═══ PROGRESS ═══ -->
+  <div class="screen" id="s-progress">
+    <div class="phdr"><div><div class="ph-title">Taraqqiyot</div><div class="ph-sub">Haftalik statistika</div></div></div>
+    <div class="scroll">
+      <div class="pgsum">
+        <div class="pgstitle">Umumiy koʼrsatkichlar</div>
+        <div class="pggrid">
+          <div class="pgstat"><div class="pgnum">🔥 12</div><div class="pglbl">Kunlik streak</div></div>
+          <div class="pgstat"><div class="pgnum">📹 47</div><div class="pglbl">Koʼrilgan darslar</div></div>
+          <div class="pgstat"><div class="pgnum">18 soat</div><div class="pglbl">Umumiy vaqt</div></div>
+          <div class="pgstat"><div class="pgnum">✅ 3</div><div class="pglbl">Faol kurslar</div></div>
+        </div>
+      </div>
+      <div class="wchart">
+        <div class="wctitle">Haftalik oʼquv daqiqalari</div>
+        <div class="bars">
+          <div class="bcol"><div class="bfill" style="height:32px"></div><div class="bday">Du</div></div>
+          <div class="bcol"><div class="bfill" style="height:52px"></div><div class="bday">Se</div></div>
+          <div class="bcol"><div class="bfill" style="height:38px"></div><div class="bday">Ch</div></div>
+          <div class="bcol"><div class="bfill" style="height:58px"></div><div class="bday">Pa</div></div>
+          <div class="bcol"><div class="bfill" style="height:44px"></div><div class="bday">Ju</div></div>
+          <div class="bcol"><div class="bfill today" style="height:48px"></div><div class="bday">Sh</div></div>
+          <div class="bcol"><div class="bfill" style="height:8px;opacity:.3"></div><div class="bday">Ya</div></div>
+        </div>
+      </div>
+      <div class="slabel" style="padding-top:4px">Yutuqlar 🏅</div>
+      <div class="achcard"><div class="achi">🏆</div><div class="achinfo"><div class="achtitle">7 kunlik streak!</div><div class="achdesc">Ketma-ket 7 kun oʼqidingiz</div></div><div class="achdate">3 kun oldin</div></div>
+      <div class="achcard"><div class="achi">⭐</div><div class="achinfo"><div class="achtitle">Testchi</div><div class="achdesc">10 ta testda 90%+ ball</div></div><div class="achdate">1 hafta oldin</div></div>
+      <div class="achcard"><div class="achi">📚</div><div class="achinfo"><div class="achtitle">Faol oʼquvchi</div><div class="achdesc">40+ dars koʼrdingiz</div></div><div class="achdate">2 hafta oldin</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ PROFILE ═══ -->
+  <div class="screen" id="s-profile">
+    <div class="phdr"><div class="ph-title">Profil</div></div>
+    <div class="scroll">
+      <div class="ptop">
+        <div class="avatar">S</div>
+        <div class="pname">Sardor Rahimov</div>
+        <div class="pemail">sardor@gmail.com</div>
+        <div class="pstats">
+          <div class="pst"><div class="pstn">3</div><div class="pstl">Kurs</div></div>
+          <div class="pst"><div class="pstn">47</div><div class="pstl">Dars</div></div>
+          <div class="pst"><div class="pstn">2</div><div class="pstl">Sertifikat</div></div>
+        </div>
+      </div>
+      <div style="height:8px"></div>
+      <div class="mitem" onclick="alert('Profil tahrirlash')"><div class="micon">✏️</div><div class="mlabel">Profilni tahrirlash</div><div class="marrow">›</div></div><div class="mdiv"></div>
+      <div class="mitem" onclick="alert('Bildirishnomalar yoqilgan')"><div class="micon">🔔</div><div class="mlabel">Bildirishnomalar</div><div class="marrow">›</div></div><div class="mdiv"></div>
+      <div class="mitem"><div class="micon">🌐</div><div class="mlabel">Til: Oʼzbek</div><div class="marrow">›</div></div><div class="mdiv"></div>
+      <div class="mitem" onclick="alert('Yuklab olingan:\n• Python — 7 dars\n• Veb-dizayn — 4 dars')"><div class="micon">📥</div><div class="mlabel">Yuklab olinganlar</div><div class="marrow">›</div></div><div class="mdiv"></div>
+      <div class="mitem" onclick="alert('To\'lovlar:\n• Python: 80 000 so\'m ✅\n• Veb-dizayn: 95 000 so\'m ✅\n• Excel: 60 000 so\'m ✅')"><div class="micon">💳</div><div class="mlabel">Toʼlovlar tarixi</div><div class="marrow">›</div></div><div class="mdiv"></div>
+      <div class="mitem" onclick="alert('Sertifikatlar:\n1. JavaScript asoslari\n2. Python boshlang\'ich daraja')"><div class="micon">🎓</div><div class="mlabel">Sertifikatlarim (2)</div><div class="marrow">›</div></div><div class="mdiv"></div>
+      <div class="mitem" onclick="if(confirm('Chiqishni xohlaysizmi?'))alert('Tizimdan chiqdingiz')"><div class="micon">🚪</div><div class="mlabel" style="color:#c00">Chiqish</div><div class="marrow" style="color:#c00">›</div></div>
+    </div>
+  </div>
+
+  <!-- ═══ DETAIL ═══ -->
+  <div class="screen" id="s-detail">
+    <div class="dhdr">
+      <button class="backbtn" onclick="goBack()">‹</button>
+      <div class="dhdr-title" id="d-hdr-title">Kurs</div>
+      <button class="ibtn" id="fav-btn" onclick="toggleFav()">♡</button>
+    </div>
+    <div class="scroll">
+      <div class="dbanner" id="d-banner">📚</div>
+      <div class="dbody">
+        <div class="dtitle" id="d-title"></div>
+        <div class="dauthor" id="d-author"></div>
+        <div class="dstats" id="d-stats"></div>
+        <div class="ddesc" id="d-desc"></div>
+        <div class="ltitle">Darslar roʼyxati</div>
+        <div id="d-lessons"></div>
+        <button class="enroll" id="d-enroll" onclick="enrollCourse()"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ VIDEO ═══ -->
+  <div class="vscreen" id="s-video">
+    <div class="vhdr">
+      <button class="backbtn" style="background:#222;color:#fff" onclick="goBackFromVideo()">‹</button>
+      <div style="font-size:13px;font-weight:700;flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:#ddd" id="v-hdr-title">Dars</div>
+    </div>
+    <div class="varea">
+      <button class="vplay" id="v-play-btn" onclick="togglePlay()">▶</button>
+      <div class="vtime-txt" id="v-time">0:00 / 0:00</div>
+    </div>
+    <div class="vcontrols">
+      <div class="vseek" id="v-seek-bar" onclick="seekVideo(event)">
+        <div class="vseek-fill" id="v-seek"></div>
+      </div>
+      <select class="vspeed" id="v-speed" onchange="setSpeed(this.value)">
+        <option value="0.75">0.75x</option>
+        <option value="1" selected>1x</option>
+        <option value="1.25">1.25x</option>
+        <option value="1.5">1.5x</option>
+        <option value="2">2x</option>
+      </select>
+    </div>
+    <div class="vbody-scroll">
+      <div class="vbody">
+        <div class="vtitle" id="v-title">Dars nomi</div>
+        <div class="vauthor" id="v-author">Oʼqituvchi</div>
+        <div class="vtabs">
+          <button class="vtab active" onclick="setVTab(this,'konspekt')">Konspekt</button>
+          <button class="vtab" onclick="setVTab(this,'izohlar')">Izohlar</button>
+          <button class="vtab" onclick="setVTab(this,'keyingi')">Keyingi darslar</button>
+        </div>
+        <div class="vtabcontent" id="v-tab-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div id="bnav">
+    <button class="nb active" id="nb-home" onclick="goScreen('home')"><span class="ni">🏠</span><span class="nl">Bosh</span></button>
+    <button class="nb" id="nb-courses" onclick="goScreen('courses')"><span class="ni">🔍</span><span class="nl">Kurslar</span></button>
+    <button class="nb" id="nb-my" onclick="goScreen('my')"><span class="ni">📚</span><span class="nl">Mening</span></button>
+    <button class="nb" id="nb-progress" onclick="goScreen('progress')"><span class="ni">📊</span><span class="nl">Taraqqiyot</span></button>
+    <button class="nb" id="nb-profile" onclick="goScreen('profile')"><span class="ni">👤</span><span class="nl">Profil</span></button>
+  </div>
+</div>
+
+<script>
+// ═══ LESSON CONTENT (konspektlar) ═══
+const KONSPEKTLAR = {
+  python: [
+    {
+      title:"Python nima? Oʼrnatish va sozlash",
+      blocks:[
+        {type:'text', title:'Python haqida', text:'Python — 1991-yilda Guido van Rossum tomonidan yaratilgan yuqori darajali dasturlash tili. U o\'qish va yozish osonligi, keng kutubxonalar to\'plami va ko\'p sohada qo\'llanishi bilan mashhur.'},
+        {type:'keypoints', items:['🌐 Veb ilovalar yaratish (Django, Flask)','🤖 Sun\'iy intellekt va ML (TensorFlow, PyCharm)','📊 Ma\'lumotlar tahlili (Pandas, NumPy)','🔧 Skriptlash va avtomatlash']},
+        {type:'tip', text:'Python o\'rnatish: python.org saytiga kiring, "Downloads" bo\'limidan yuklab oling. Windows, Mac va Linux uchun alohida versiyalar mavjud.'},
+        {type:'code', lang:'bash', code:'python --version\n# Python 3.11.0\n\nprint("Salom, dunyo!")\n# Salom, dunyo!'},
+      ]
+    },
+    {
+      title:"Oʼzgaruvchilar va maʼlumot turlari",
+      blocks:[
+        {type:'text', title:'O\'zgaruvchi nima?', text:'O\'zgaruvchi — ma\'lumotni saqlash uchun ishlatiladigan nom. Python\'da o\'zgaruvchi turini oldindan belgilash shart emas, Python o\'zi avtomatik aniqlaydi.'},
+        {type:'code', lang:'python', code:'ism = "Sardor"          # str (matn)\nyosh = 25               # int (butun son)\nbaho = 4.8              # float (o\'nlik son)\ntalaba = True           # bool (mantiqiy)\n\nprint(ism, yosh, baho)  # Sardor 25 4.8'},
+        {type:'keypoints', items:['📝 str — matn: "salom", \'xayr\'','🔢 int — butun son: 1, 100, -5','💧 float — o\'nlik: 3.14, 2.0','✅ bool — True yoki False']},
+        {type:'tip', text:'Python\'da o\'zgaruvchi nomida bo\'shliq bo\'lmaydi. Agar ikki so\'z bo\'lsa, ular orasiga pastki chiziq qo\'ying: ism_familiya = "Sardor Rahimov"'},
+      ]
+    },
+    {
+      title:"Shartli operatorlar: if, elif, else",
+      blocks:[
+        {type:'text', title:'Shartli bajariladigan kod', text:'Dasturda ba\'zan ma\'lum shartga qarab turli amallarni bajarish kerak bo\'ladi. Buning uchun if-elif-else konstruksiyasi ishlatiladi.'},
+        {type:'code', lang:'python', code:'baho = 85\n\nif baho >= 90:\n    print("Aʼlo")\nelif baho >= 75:\n    print("Yaxshi")   # ← shu ishlaydi\nelif baho >= 60:\n    print("Qoniqarli")\nelse:\n    print("Qoniqarsiz")'},
+        {type:'tip', text:'Python\'da bloklar ichi "4 bo\'sh joy" (indent) bilan belgilanadi. Ichki kod hech qachon chapga yopishib yozilmaydi!'},
+        {type:'keypoints', items:['== tenglikni tekshiradi (= emas!)','!= tengsizlik','> va < katta/kichik','>= va <= katta-teng/kichik-teng']},
+      ]
+    },
+    {
+      title:"Tsikllar: for va while",
+      blocks:[
+        {type:'text', title:'Tsikllar bilan takrorlash', text:'Biror amalni bir necha marta bajarish uchun tsikllar ishlatiladi. Python\'da ikki xil tsikl bor: for (ma\'lum marta) va while (shart bajarilguncha).'},
+        {type:'code', lang:'python', code:'# FOR tsikli\nfruktlar = ["olma", "nok", "uzum"]\nfor meva in fruktlar:\n    print(meva)\n\n# Natija:\n# olma\n# nok\n# uzum'},
+        {type:'code', lang:'python', code:'# WHILE tsikli\nson = 1\nwhile son <= 5:\n    print(son)\n    son += 1\n\n# Natija: 1  2  3  4  5'},
+        {type:'tip', text:'while tsiklida shart hech qachon False bo\'lmasa, "cheksiz tsikl" hosil bo\'ladi. Ehtiyot bo\'ling! Chiqish uchun Ctrl+C bosing.'},
+      ]
+    },
+    {
+      title:"Funksiyalar va parametrlar",
+      blocks:[
+        {type:'text', title:'Funksiya nima?', text:'Funksiya — bir necha marta ishlatish mumkin bo\'lgan kod bloki. def kalit so\'zi bilan yaratiladi va dasturni tartibli, qayta ishlatiladigan qiladi.'},
+        {type:'code', lang:'python', code:'def salomlash(ism):\n    xabar = "Salom, " + ism + "!"\n    return xabar\n\nnatija = salomlash("Sardor")\nprint(natija)  # Salom, Sardor!'},
+        {type:'code', lang:'python', code:'def yuv(a, b):\n    """Ikki sonni yig\'adi"""\n    return a + b\n\nprint(yuv(5, 3))    # 8\nprint(yuv(10, 20))  # 30'},
+        {type:'keypoints', items:['def — funksiya yaratish','return — natija qaytarish','Parametrlar — kiruvchi ma\'lumotlar','Argumentlar — chaqirishda beriladigan qiymatlar']},
+      ]
+    },
+    {
+      title:"Roʼyxatlar va lugʼatlar",
+      blocks:[
+        {type:'text', title:'Ro\'yxat (list)', text:'Ro\'yxat — bir necha elementni tartibli saqlash uchun ishlatiladigan ma\'lumot turi. Kvadrat qavs bilan yoziladi.'},
+        {type:'code', lang:'python', code:'talabalar = ["Ali", "Vali", "Soli"]\ntalabalar.append("Lola")  # qo\'shish\ntalabalar.remove("Ali")   # o\'chirish\nprint(len(talabalar))      # 3\nprint(talabalar[0])        # Vali'},
+        {type:'text', title:'Lug\'at (dict)', text:'Lug\'at — kalit-qiymat juftliklarini saqlaydi. Kalit orqali ma\'lumotga tez kirish imkonini beradi.'},
+        {type:'code', lang:'python', code:'talaba = {\n    "ism": "Sardor",\n    "yosh": 25,\n    "baho": 4.8\n}\n\nprint(talaba["ism"])   # Sardor\ntalaba["yosh"] = 26    # yangilash'},
+      ]
+    },
+  ],
+  web: [
+    {
+      title:"HTML: Sarlavhalar va paragraflar",
+      blocks:[
+        {type:'text', title:'HTML nima?', text:'HTML (HyperText Markup Language) — veb-sahifalarning tuzilmasini belgilovchi til. U teg (tag) lar yordamida yoziladi va brauzer bu teglarni ko\'rgazmali ko\'rinishga aylantiradi.'},
+        {type:'code', lang:'html', code:'<!DOCTYPE html>\n<html>\n  <head>\n    <title>Mening saytim</title>\n  </head>\n  <body>\n    <h1>Salom, dunyo!</h1>\n    <p>Bu mening birinchi veb-sahifam.</p>\n  </body>\n</html>'},
+        {type:'keypoints', items:['<h1>...<h6> — sarlavhalar (h1 eng katta)','<p> — paragraf (matn bloki)','<strong> — qalin matn','<em> — qiyshiq (italic) matn']},
+      ]
+    },
+    {
+      title:"Jadvallar va roʼyxatlar",
+      blocks:[
+        {type:'text', title:'Ro\'yxatlar', text:'HTML\'da ikki xil ro\'yxat mavjud: tartibli (ol — numbered) va tartibsiz (ul — bulleted).'},
+        {type:'code', lang:'html', code:'<!-- Tartibsiz ro\'yxat -->\n<ul>\n  <li>Olma</li>\n  <li>Nok</li>\n  <li>Uzum</li>\n</ul>\n\n<!-- Tartibli ro\'yxat -->\n<ol>\n  <li>Birinchi qadam</li>\n  <li>Ikkinchi qadam</li>\n</ol>'},
+        {type:'tip', text:'li teglari faqat ul yoki ol ichida ishlatiladi. Ularni mustaqil ishlatmang!'},
+      ]
+    },
+    {
+      title:"Formalar va tugmalar",
+      blocks:[
+        {type:'text', title:'HTML formalar', text:'Formalar foydalanuvchidan ma\'lumot olish uchun ishlatiladi: login, ro\'yxatdan o\'tish, qidiruv va boshqalar.'},
+        {type:'code', lang:'html', code:'<form>\n  <label>Ismingiz:</label>\n  <input type="text" placeholder="Ism kiriting">\n\n  <label>Emailingiz:</label>\n  <input type="email" placeholder="email@mail.com">\n\n  <button type="submit">Yuborish</button>\n</form>'},
+        {type:'keypoints', items:['type="text" — matn maydoni','type="email" — email tekshiruvli maydon','type="password" — parol (yashirin)','type="checkbox" — belgilash qutisi']},
+      ]
+    },
+  ],
+  sql: [
+    {
+      title:"Maʼlumotlar bazasi nima?",
+      blocks:[
+        {type:'text', title:'Ma\'lumotlar bazasi tushunchasi', text:'Ma\'lumotlar bazasi (database) — tizimli tartibda saqlangan, qulay qidiruv va boshqaruv imkonini beradigan ma\'lumotlar to\'plami. SQL — ushbu ma\'lumotlar bilan ishlash uchun qo\'llaniladigan til.'},
+        {type:'keypoints', items:['📋 Jadval (Table) — ma\'lumotlar saqlanadigan struktura','🔑 Ustun (Column) — ma\'lumot turi (ism, yosh)','📝 Qator (Row) — bir yozuv (bir talaba ma\'lumoti)','🆔 Primary Key — har qator uchun yagona belgi']},
+        {type:'code', lang:'sql', code:'-- Jadval yaratish\nCREATE TABLE talabalar (\n  id INTEGER PRIMARY KEY,\n  ism TEXT,\n  yosh INTEGER,\n  email TEXT\n);'},
+      ]
+    },
+    {
+      title:"SELECT va WHERE bilan qidiruv",
+      blocks:[
+        {type:'text', title:'Ma\'lumot olish', text:'SELECT so\'rovi jadvaldan ma\'lumot olish uchun ishlatiladi. WHERE qo\'shilsa, faqat shartga mos qatorlar qaytariladi.'},
+        {type:'code', lang:'sql', code:'-- Barcha talabalar\nSELECT * FROM talabalar;\n\n-- Faqat ism va yosh\nSELECT ism, yosh FROM talabalar;\n\n-- 20 yoshdan katta talabalar\nSELECT * FROM talabalar\nWHERE yosh > 20;\n\n-- Ismi "Ali" bo\'lganlar\nSELECT * FROM talabalar\nWHERE ism = \'Ali\';'},
+        {type:'tip', text:'* belgisi "barcha ustunlar" degan ma\'no beradi. Katta jadvallarda faqat kerakli ustunlarni sanab ko\'rsatgan ma\'qul.'},
+      ]
+    },
+  ],
+  excel: [
+    {
+      title:"VLOOKUP va HLOOKUP funksiyalari",
+      blocks:[
+        {type:'text', title:'VLOOKUP nima?', text:'VLOOKUP — jadvaldan qiymat qidirish va mos ustundagi ma\'lumotni qaytaruvchi Excel funksiyasi. "V" — vertical (vertikal) degan ma\'noni anglatadi.'},
+        {type:'code', lang:'excel', code:'=VLOOKUP(qidirilayotgan_qiymat,\n         qidirish_diapazoni,\n         ustun_raqami,\n         [taxminiy_moslik])\n\n-- Misol:\n=VLOOKUP(A2, Mahsulotlar!A:C, 2, FALSE)\n-- A2 dagi kod bo\'yicha narxni topadi'},
+        {type:'keypoints', items:['Birinchi argument — qidiriladigan qiymat','Ikkinchi argument — qidirish maydoni','Uchinchi argument — qaytariladigan ustun raqami','FALSE — aniq moslik, TRUE — taxminiy moslik']},
+        {type:'tip', text:'VLOOKUP faqat chapdan o\'ngga qidiradi! Agar teskari kerak bo\'lsa, INDEX+MATCH kombinatsiyasini ishlating.'},
+      ]
+    },
+    {
+      title:"INDEX va MATCH kombinatsiyasi",
+      blocks:[
+        {type:'text', title:'Nima uchun INDEX+MATCH?', text:'INDEX+MATCH — VLOOKUP\'dan kuchliroq usul. U istalgan yo\'nalishda qidiradi, katta jadvallarda tezroq ishlaydi va ustun qo\'shilganda buzilmaydi.'},
+        {type:'code', lang:'excel', code:'=INDEX(natija_ustuni,\n       MATCH(qidirish_qiymati,\n             qidirish_ustuni, 0))\n\n-- Misol:\n=INDEX(C2:C100,\n       MATCH("Ali", A2:A100, 0))\n-- "Ali" ismli shaxsning C ustunidagi\n-- qiymatini qaytaradi'},
+      ]
+    },
+  ],
+  photo: [
+    {
+      title:"Kamera turlari va obʼektivlar",
+      blocks:[
+        {type:'text', title:'Kamera turlari', text:'Professional fotografiyada asosan ikkita kamera turi qo\'llaniladi: DSLR (linzali reflex) va Mirrorless (oynasiz). Ikkisi ham yuqori sifatli rasm beradi, lekin har birining o\'z afzalligi bor.'},
+        {type:'keypoints', items:['📷 DSLR — optik ko\'rinish oynasi, uzoqroq batareya', '🎯 Mirrorless — yengilroq, video uchun yaxshi', '📱 Smartfon — qulay, har doim yonida', '🔭 Ob\'ektiv focal length: 24mm (keng), 50mm (normal), 85mm (portret)']},
+        {type:'tip', text:'Boshlang\'ichlar uchun 50mm ob\'ektiv eng mos tanlov — u inson ko\'zi ko\'radigan burchakka yaqin va arzonroq.'},
+      ]
+    },
+    {
+      title:"Ekspozitsiya uchburchagi",
+      blocks:[
+        {type:'text', title:'Ekspozitsiya uchburchagi', text:'Har bir rasm uchta asosiy parametrning kombinatsiyasidan iborat: ISO, Apertura (diafragma) va Shutter Speed (ekspoziitsiya vaqti). Bularni muvozanatda tutish to\'g\'ri yorug\'likdagi rasm beradi.'},
+        {type:'keypoints', items:['☀️ ISO — sezgirlik (100 past, 3200 baland)','🕳️ Apertura f/1.8 (keng) — f/16 (tor)','⚡ Shutter Speed 1/1000s (tez) — 1s (sekin)']},
+        {type:'tip', text:'Qorong\'ida: ISO oshiring + Apertura kengroq oching + Shutter sekinlashtiring. Lekin uchini bir paytda o\'zgartirmang!'},
+      ]
+    },
+  ],
+  finance: [
+    {
+      title:"Moliyaviy savodxonlik nima?",
+      blocks:[
+        {type:'text', title:'Pul boshqaruvi sanati', text:'Moliyaviy savodxonlik — daromad, xarajat, jamg\'arma va investitsiyalarni to\'g\'ri boshqarish qobiliyati. Ko\'p odamlar ko\'p ishlasada, oylik maoshi tugamasdan qoladi — sababi moliyaviy savodxonlik yo\'qligi.'},
+        {type:'keypoints', items:['💰 50-30-20 qoidasi: 50% zaruriyat, 30% istak, 20% jamg\'arma','🏦 Favqulodda fond: 3-6 oylik xarajat','📈 Inflyatsiyadan himoya: pul ishlatilmasa qadrsizlanadi','🎯 Moliyaviy maqsad: muddatli va aniq bo\'lsin']},
+        {type:'tip', text:'Har oyning boshida avval jamg\'armangizni ajrating, qolganiga yashang. "Qolgan pulni" hech qachon tejab bo\'lmaydi.'},
+      ]
+    },
+    {
+      title:"Byudjet tuzish usullari",
+      blocks:[
+        {type:'text', title:'Byudjet — moliyaviy reja', text:'Byudjet — har oyga oldindan tuzilgan daromad va xarajatlar rejasi. Byudjet tuzmasdan pul boshqarish xaritasiz sayohat qilishga o\'xshaydi.'},
+        {type:'code', lang:'excel', code:'DAROMAD:\n  Maosh:         5 000 000 so\'m\n  Qo\'shimcha:      500 000 so\'m\n  JAMI:          5 500 000 so\'m\n\nXARAJATLAR:\n  Uy ijarasi:    1 500 000\n  Oziq-ovqat:    1 000 000\n  Transport:       300 000\n  Kommunal:        200 000\n  Jamg\'arma:     1 100 000  ← 20%\n  Erkin:         1 400 000'},
+        {type:'tip', text:'Har bir xarajatni daftarga yozing — hatto kichik narxalarni ham. Oyning oxirida tahlil qilganingizda ko\'p narsani ko\'rasiz.'},
+      ]
+    },
+  ],
+};
+
+const IZOHLAR = {
+  python:["Juda tushunarli tushuntirildi, Pythonʼga qiziqishim yanada ortdi!","Oʼrnatish qismi biroz murakkab edi, lekin muvaffaqiyatli bajardim.","Keyingi darslar ham shu darajada boʼlsa zoʼr boʼlardi.","Dasturlashni boshlamoqchi boʼlganlarga tavsiya qilaman!"],
+  web:["HTML teglari juda qulay, tez yodladim.","Brauzerda koʼrish qiziqarli, motivatsiya beradi.","Har bir misolni oʼzi sinab koʼrdim, juda foydali.","Keyingi CSS darsi qachon?"],
+  sql:["SQL sintaksisi ingliz tilidek oʼqiladi, juda qulay.","JOIN qismini biroz qaytadan koʼrish kerak.","Maʼlumotlar bazasi juda kuchli ekan!","Amaliy misollarga koʼproq joy berilsa zoʼr boʼlardi."],
+  excel:["VLOOKUPʼni uzoq vaqt tushunmagan edim, endi aniq!","Ish joyimda darhol qoʼlladim, vaqtimni tejadi.","INDEX+MATCHʼni ham koʼrsatib yuborsangiz yaxshi boʼlardi.","Eng foydali Excel darsi!"],
+  photo:["Kamera sozlamalarini nihoyat tushundim.","Ekspozitsiya uchburchagi - qoʼllanma sifatida saqladim.","Smartfon bilan ham qoʼllanish mumkinligi ajoyib!","Amaliy mashq uchun vazifa bersangiz zoʼr boʼlardi."],
+  finance:["Bu bilimlarni maktabda oʼqitishlari kerak edi!","50-30-20 qoidasini darhol ishlatishni boshladim.","Byudjet tuzish oddiy ekan, oʼzim sinab koʼraman.","Investitsiyalar haqida ham dars boʼladimi?"],
+};
+
+// ═══ COURSES DATA ═══
+const COURSES = [
+  {id:'python',icon:'🐍',title:'Python dasturlash: Noldan Professionallikkacha',author:'Jasur Nazarov',cat:'dasturlash',stars:'4.9',students:'1 200',count:6,hours:3,level:"Boshlangʼich",price:'80 000 so\'m',badge:'Yangi',enrolled:true,pct:29,desc:'Python dasturlash tilining asoslaridan boshlab, o\'zgaruvchilar, shartlar, tsikllar, funksiyalar va ma\'lumotlar tuzilmalarigacha o\'rganasiz. Har bir mavzu amaliy mashqlar bilan mustahkamlanadi.'},
+  {id:'web',icon:'🌐',title:'Veb-dizayn: HTML, CSS va JavaScript',author:'Dilnoza Saidova',cat:'dizayn',stars:'4.7',students:'3 400',count:6,hours:4,level:"Boshlangʼich",price:'95 000 so\'m',badge:'Mashhur',enrolled:true,pct:50,desc:'HTML tuzilmasidan boshlab CSS bilan bezash va JavaScript orqali interaktivlik qo\'shishni o\'rganasiz. Kurs oxirida to\'liq veb-sayt yaratasiz.'},
+  {id:'sql',icon:'🗄️',title:"SQL va Maʼlumotlar Bazasi Boshqaruvi",author:'Aziz Karimov',cat:'dasturlash',stars:'4.8',students:'890',count:5,hours:3,level:"Boshlangʼich",price:'45 000 so\'m',badge:'Tavsiya',enrolled:false,pct:0,desc:"SQL tilining asosiy soʼrovlaridan boshlab murakkab soʼrovlar yozishni oʼrganasiz. PostgreSQL va MySQL misollari bilan tushuntiriladi."},
+  {id:'photo',icon:'📸',title:'Fotografiya asoslari: Kamera va Kompozitsiya',author:'Nilufar Yusupova',cat:'dizayn',stars:'4.6',students:'560',count:5,hours:3,level:"Boshlangʼich",price:'35 000 so\'m',badge:'',enrolled:false,pct:0,desc:'Kamerani to\'g\'ri sozlash, ekspozitsiya va kompozitsiya qoidalarini o\'rganasiz. Smartfon fotografiya uchun ham foydali.'},
+  {id:'excel',icon:'📊',title:'Excel: Chuqurlashtirilgan kurs',author:'Bobur Toshmatov',cat:'biznes',stars:'4.9',students:'2 100',count:5,hours:3,level:"Oʼrta daraja",price:'60 000 so\'m',badge:'Mashhur',enrolled:true,pct:17,desc:'VLOOKUP, INDEX-MATCH, Pivot Table va makroslar yordamida katta ma\'lumotlar bilan ishlashni o\'rganasiz.'},
+  {id:'finance',icon:'📈',title:"Moliyaviy savodxonlik: Pul boshqaruvi",author:'Bobur Toshmatov',cat:'biznes',stars:'4.9',students:'1 500',count:5,hours:3,level:"Oʼrta daraja",price:'60 000 so\'m',badge:'Tavsiya',enrolled:false,pct:0,desc:'Shaxsiy moliyaviy reja tuzish, byudjet boshqaruvi, jamg\'arma va investitsiyalarga kirish usullarini o\'rganasiz.'},
+];
+
+let curScreen='home', prevScreen='home', curDetailId=null, curVideoLesson=null;
+let favs=new Set(), enrolled=new Set(COURSES.filter(c=>c.enrolled).map(c=>c.id));
+let curCat='all', isPlaying=false, videoTimer=null, videoSec=0, speedMul=1;
+let videoTotal=0;
+
+// Notification
+function showNotif(){ alert('Bildirishnomalar:\n🔥 Streak: bugun ham o\'qing!\n📹 Python: yangi dars qo\'shildi\n⭐ Sertifikatga 3 dars qoldi'); }
+
+// Screen
+function goScreen(name){
+  document.querySelectorAll('.screen,.vscreen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s-'+name).classList.add('active');
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  const nb=document.getElementById('nb-'+name);
+  if(nb) nb.classList.add('active');
+  document.getElementById('bnav').style.display='flex';
+  prevScreen=curScreen; curScreen=name;
+  if(name==='courses') renderCourses();
+  if(name==='my') renderMy('active');
+}
+
+function goBack(){
+  stopVideo();
+  document.getElementById('bnav').style.display='flex';
+  const target = (prevScreen==='detail'||prevScreen==='video') ? 'home' : prevScreen;
+  goScreen(target);
+}
+
+function goBackFromVideo(){
+  stopVideo();
+  document.getElementById('bnav').style.display='flex';
+  document.querySelectorAll('.screen,.vscreen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s-detail').classList.add('active');
+  curScreen='detail';
+}
+
+// Courses
+function renderCourses(){
+  const q=(document.getElementById('search-input').value||'').toLowerCase();
+  const list=document.getElementById('courses-list');
+  const filtered=COURSES.filter(c=>{
+    const mc=curCat==='all'||c.cat===curCat;
+    const mq=!q||c.title.toLowerCase().includes(q)||c.author.toLowerCase().includes(q);
+    return mc&&mq;
+  });
+  list.innerHTML=filtered.length?filtered.map(c=>`
+    <div class="kcard" onclick="openDetail('${c.id}')">
+      <div class="kbanner">${c.icon}</div>
+      <div class="kbody">
+        ${c.badge?`<span class="badge${c.badge==='Yangi'?' new':''}">${c.badge}</span>`:''}
+        <div class="ktitle">${c.title}</div>
+        <div class="kauthor">👤 ${c.author}</div>
+        <div class="krow">
+          <div class="kstats"><span class="ks">⭐${c.stars}</span><span class="ks">👥${c.students}</span><span class="ks">📹${c.count}</span></div>
+          <div class="kprice">${enrolled.has(c.id)?'✅ Yozilgan':c.price}</div>
+        </div>
+      </div>
+    </div>`).join('')
+  :'<div style="padding:40px;text-align:center;color:var(--text3)">Hech narsa topilmadi 🔍</div>';
+}
+
+function filterCourses(){renderCourses();}
+function setCat(btn,cat){
+  document.querySelectorAll('.catb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); curCat=cat; renderCourses();
+}
+
+function renderMy(tab){
+  const list=document.getElementById('my-list');
+  if(tab==='active'){
+    const mine=COURSES.filter(c=>enrolled.has(c.id));
+    list.innerHTML=mine.length?mine.map(c=>`
+      <div class="mycard" onclick="openDetail('${c.id}')">
+        <div class="mctop"><div class="mcthumb">${c.icon}</div><div class="mcinfo"><div class="mctitle">${c.title}</div><div class="mcauthor">${c.author}</div></div></div>
+        <div class="mcprow"><div class="mcpb"><div class="mcpf" style="width:${c.pct}%"></div></div><div class="mcpct">${c.pct}%</div></div>
+        <div class="mclast">⏱ ${c.pct>0?'Davom etmoqda':'Boshlanmagan'}</div>
+      </div>`).join('')
+    :'<div style="padding:40px;text-align:center;color:var(--text3)">Hali kurs yo\'q</div>';
+  } else {
+    list.innerHTML='<div style="padding:40px;text-align:center;color:var(--text3)">Bu bo\'limda hozircha kurslar yo\'q</div>';
+  }
+}
+
+function setMyTab(btn,tab){
+  document.querySelectorAll('.mytab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); renderMy(tab);
+}
+
+// Detail
+function openDetail(id){
+  const c=COURSES.find(x=>x.id===id); if(!c) return;
+  curDetailId=id;
+  document.getElementById('d-hdr-title').textContent=c.title.slice(0,30)+'…';
+  document.getElementById('d-banner').textContent=c.icon;
+  document.getElementById('d-title').textContent=c.title;
+  document.getElementById('d-author').textContent='👤 '+c.author;
+  document.getElementById('d-stats').innerHTML=[`⭐ ${c.stars}`,`👥 ${c.students} talaba`,`📹 ${c.count} dars`,`⏱ ${c.hours} soat`,`📶 ${c.level}`].map(s=>`<span class="dst">${s}</span>`).join('');
+  document.getElementById('d-desc').textContent=c.desc;
+  document.getElementById('d-enroll').textContent=enrolled.has(id)?'Davom ettirish ▶':`Kursga yozilish — ${c.price}`;
+  document.getElementById('fav-btn').textContent=favs.has(id)?'❤️':'♡';
+
+  const lessons=KONSPEKTLAR[id]||[];
+  document.getElementById('d-lessons').innerHTML=lessons.map((l,i)=>`
+    <div class="litem" onclick="openVideo('${id}',${i})">
+      <div class="lnum${c.pct>0&&i<Math.ceil(c.pct/100*lessons.length)?' done':''}">${c.pct>0&&i<Math.ceil(c.pct/100*lessons.length)?'✓':i+1}</div>
+      <div class="linfo"><div class="ltxt">${l.title}</div><div class="ldur">⏱ ${(i+1)*5+10} daq</div></div>
+      <span style="font-size:14px">${enrolled.has(id)?'▶':'🔒'}</span>
+    </div>`).join('');
+
+  prevScreen=curScreen; curScreen='detail';
+  document.querySelectorAll('.screen,.vscreen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s-detail').classList.add('active');
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+}
+
+function enrollCourse(){
+  if(!curDetailId) return;
+  const c=COURSES.find(x=>x.id===curDetailId);
+  if(enrolled.has(curDetailId)){
+    const lessons=KONSPEKTLAR[curDetailId]||[];
+    const first=lessons.findIndex((_,i)=>!(c.pct>0&&i<Math.ceil(c.pct/100*lessons.length)));
+    openVideo(curDetailId, first>=0?first:0);
+  } else {
+    if(confirm(`"${c.title}"\nKursga yozilasizmi?\n\n💳 Toʼlov: ${c.price}`)){
+      enrolled.add(curDetailId); c.enrolled=true;
+      document.getElementById('d-enroll').textContent='Davom ettirish ▶';
+      openDetail(curDetailId);
+      alert('✅ Kursga muvaffaqiyatli yozildingiz!\nO\'qishni boshlashingiz mumkin.');
+    }
+  }
+}
+
+function toggleFav(){
+  if(!curDetailId) return;
+  if(favs.has(curDetailId)){favs.delete(curDetailId);document.getElementById('fav-btn').textContent='♡';}
+  else{favs.add(curDetailId);document.getElementById('fav-btn').textContent='❤️';}
+}
+
+// Video
+function openVideo(courseId, lessonIdx){
+  const c=COURSES.find(x=>x.id===courseId);
+  if(!c) return;
+  if(!enrolled.has(courseId)){alert('Avval kursga yoziling!'); return;}
+  const lessons=KONSPEKTLAR[courseId]||[];
+  const l=lessons[lessonIdx]; if(!l) return;
+  curVideoLesson={courseId,lessonIdx};
+  videoTotal=(lessonIdx+1)*5+10; // simulate different lengths
+  videoSec=0; isPlaying=false; speedMul=1;
+  document.getElementById('v-play-btn').textContent='▶';
+  document.getElementById('v-seek').style.width='0%';
+  document.getElementById('v-hdr-title').textContent=l.title;
+  document.getElementById('v-title').textContent=l.title;
+  document.getElementById('v-author').textContent='👤 '+c.author+' · '+c.title;
+  document.getElementById('v-time').textContent='0:00 / '+fmt(videoTotal*60);
+  document.getElementById('v-speed').value='1';
+  document.querySelectorAll('.vtab').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.vtab').classList.add('active');
+  renderVTab('konspekt');
+
+  document.getElementById('bnav').style.display='none';
+  prevScreen=curScreen; curScreen='video';
+  document.querySelectorAll('.screen,.vscreen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s-video').classList.add('active');
+}
+
+function togglePlay(){
+  isPlaying=!isPlaying;
+  document.getElementById('v-play-btn').textContent=isPlaying?'⏸':'▶';
+  if(isPlaying){
+    videoTimer=setInterval(()=>{
+      videoSec+=speedMul;
+      const total=videoTotal*60;
+      if(videoSec>=total){stopVideo();markDone();return;}
+      document.getElementById('v-seek').style.width=(videoSec/total*100).toFixed(1)+'%';
+      document.getElementById('v-time').textContent=fmt(Math.floor(videoSec))+' / '+fmt(total);
+    },1000);
+  } else { clearInterval(videoTimer); }
+}
+
+function stopVideo(){ isPlaying=false; clearInterval(videoTimer); }
+
+function markDone(){
+  if(!curVideoLesson) return;
+  const {courseId,lessonIdx}=curVideoLesson;
+  const c=COURSES.find(x=>x.id===courseId);
+  const total=KONSPEKTLAR[courseId]?.length||1;
+  c.pct=Math.min(100, Math.round((lessonIdx+1)/total*100));
+  alert('✅ Dars yakunlandi!\nUmumiy taraqqiyot: '+c.pct+'%');
+}
+
+function setSpeed(v){ speedMul=parseFloat(v); }
+
+function seekVideo(e){
+  const bar=document.getElementById('v-seek-bar');
+  const rect=bar.getBoundingClientRect();
+  const pct=Math.max(0,Math.min(1,(e.clientX-rect.left)/rect.width));
+  videoSec=Math.floor(pct*videoTotal*60);
+  document.getElementById('v-seek').style.width=(pct*100).toFixed(1)+'%';
+  document.getElementById('v-time').textContent=fmt(videoSec)+' / '+fmt(videoTotal*60);
+}
+
+function fmt(secs){
+  const m=Math.floor(secs/60), s=Math.floor(secs%60);
+  return m+':'+(s<10?'0':'')+s;
+}
+
+function setVTab(btn,tab){
+  document.querySelectorAll('.vtab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderVTab(tab);
+}
+
+function renderVTab(tab){
+  const el=document.getElementById('v-tab-content');
+  if(!curVideoLesson){el.innerHTML=''; return;}
+  const {courseId,lessonIdx}=curVideoLesson;
+  const lessons=KONSPEKTLAR[courseId]||[];
+  const lesson=lessons[lessonIdx];
+  const c=COURSES.find(x=>x.id===courseId);
+
+  if(tab==='konspekt'){
+    if(!lesson){el.innerHTML='<p style="color:var(--text3);font-size:13px">Konspekt mavjud emas</p>';return;}
+    el.innerHTML=lesson.blocks.map(b=>{
+      if(b.type==='text') return `<div class="konspekt-block"><div class="kb-title">${b.title}</div><div class="kb-text">${b.text}</div></div>`;
+      if(b.type==='code') return `<div class="code-box"><pre>${b.code}</pre></div>`;
+      if(b.type==='tip') return `<div class="tip-box">💡 ${b.text}</div>`;
+      if(b.type==='keypoints') return `<div class="konspekt-block"><div class="kb-title">Asosiy fikrlar</div>${b.items.map(i=>`<div class="key-point">▸ ${i}</div>`).join('')}</div>`;
+      return '';
+    }).join('');
+  } else if(tab==='izohlar'){
+    const comments=(IZOHLAR[courseId]||[]).map((t,i)=>{
+      const names=['A','M','J','D','S','N'];
+      const fullnames=['Alisher T.','Malika S.','Jahongir R.','Dilnoza K.','Sarvar B.','Nilufar A.'];
+      const times=['1 kun oldin','3 kun oldin','1 hafta oldin','2 hafta oldin'];
+      return `<div class="comment"><div class="cmav">${names[i%names.length]}</div><div class="cminfo"><div class="cmname">${fullnames[i%fullnames.length]} · ${times[i%times.length]}</div><div class="cmtext">${t}</div></div></div>`;
+    }).join('');
+    el.innerHTML=comments||'<p style="color:var(--text3);font-size:13px">Hali izoh yo\'q</p>';
+  } else {
+    el.innerHTML=lessons.map((l,i)=>`
+      <div class="nl-item" onclick="openVideo('${courseId}',${i})">
+        <div class="nl-num ${i===lessonIdx?'cur':i<lessonIdx?'done':''}">${i<lessonIdx?'✓':i===lessonIdx?'▶':i+1}</div>
+        <div class="nl-info"><div class="nl-t">${l.title}</div><div class="nl-d">⏱ ${(i+1)*5+10} daq</div></div>
+      </div>`).join('');
+  }
+}
+
+// Init
+renderCourses();
+renderMy('active');
+</script>
+</body>
+</html>
